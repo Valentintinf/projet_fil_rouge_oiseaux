@@ -1,0 +1,17 @@
+# Fins de ligne LF partout, que le commit vienne de WSL ou de Windows
+* text=auto eol=lf
+
+# Scripts shell : LF obligatoire, sinon ils plantent sous Linux
+*.sh text eol=lf
+
+# Fichiers binaires : aucune conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.parquet binary
+*.zip binary
+*.gz binary
+*.wav binary
+*.mp3 binary
