@@ -1,0 +1,55 @@
+# Contrôles lancés automatiquement avant chaque commit.
+# Installation (dans le venv, sous WSL) :
+#   pip install pre-commit
+#   pre-commit install
+# Lancer tous les contrôles à la main : pre-commit run --all-files
+# Mettre à jour les versions des hooks : pre-commit autoupdate
+
+# Installe les hooks pre-commit ET commit-msg (format du message de commit)
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+
+repos:
+  # Hygiène générale des fichiers
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024] # les jeux de données ne vont pas dans Git
+      - id: detect-private-key
+
+  # Python : lint + formatage
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # SQL et modèles dbt (configuration dans .sqlfluff)
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 4.5.0
+    hooks:
+      - id: sqlfluff-lint
+
+  # Secrets : bloque un commit qui contient une clé d'API ou un mot de passe
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+
+  # Message de commit : feat:, fix:, chore: ou docs: + description
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.5.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [feat, fix, chore, docs]

@@ -1,0 +1,18 @@
+# Configuration de ruff : lint et formatage du code Python
+target-version = "py314"
+line-length = 100
+extend-exclude = ["dbt_packages", "target"]
+
+[lint]
+# E/W : style PEP 8, F : erreurs (imports inutilisés...), I : tri des imports,
+# B : bugs probables, UP : syntaxe Python moderne, N : nommage, S : sécurité (bandit)
+select = ["E", "W", "F", "I", "B", "UP", "N", "S"]
+ignore = [
+    "S101", # assert autorisé (utilisé par pytest)
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S"]
+
+[format]
+quote-style = "double"

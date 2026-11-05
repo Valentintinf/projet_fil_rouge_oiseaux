@@ -1,0 +1,14 @@
+# Profil dbt utilisé uniquement par la CI GitHub Actions (base PostgreSQL éphémère).
+# Le projet dbt doit déclarer `profile: oiseaux` dans son dbt_project.yml.
+oiseaux:
+  target: ci
+  outputs:
+    ci:
+      type: postgres
+      host: "{{ env_var('PGHOST') }}"
+      port: "{{ env_var('PGPORT') | int }}"
+      user: "{{ env_var('PGUSER') }}"
+      password: "{{ env_var('PGPASSWORD') }}" # pragma: allowlist secret
+      dbname: "{{ env_var('PGDATABASE') }}"
+      schema: ci
+      threads: 4

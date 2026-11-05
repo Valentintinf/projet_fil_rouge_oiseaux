@@ -1,0 +1,15 @@
+# Configuration de sqlfluff : lint du SQL et des modèles dbt
+[sqlfluff]
+dialect = postgres
+templater = jinja
+max_line_length = 120
+
+[sqlfluff:templater:jinja]
+# Comprend ref(), source(), config()... sans avoir besoin de dbt installé
+apply_dbt_builtins = True
+
+[sqlfluff:indentation]
+tab_space_size = 4
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = upper
