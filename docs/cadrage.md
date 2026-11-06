@@ -61,7 +61,7 @@ Ce tableau prépare les deux grilles d'entretien d'E1 : une pour ceux qui **prod
 | Service web (API REST) | iNaturalist : observations d'oiseaux | API publique, environ 60 requêtes par minute | ✅ Testée |
 | Service web (API REST) | Biodiv'Sports : zones sensibles pour la faune | API Geotrek v2 publique | ✅ Testée |
 | Service web (API) | Movebank : suivi GPS (par exemple, les cigognes) | API JSON publique, licence propre à chaque étude | ✅ Testée |
-| Service web (API avec clé) | xeno-canto : enregistrements de chants d'oiseaux (suggestion du formateur) | API v3, clé gratuite, licence Creative Commons par enregistrement | 🛠️ Collecte écrite (DE-69), essai réel à faire avec la clé |
+| Service web (API avec clé) | xeno-canto : enregistrements de chants d'oiseaux (suggestion du formateur) | API v3, clé gratuite, licence Creative Commons par enregistrement | ✅ Collecte quotidienne en place (DE-69) |
 | Service web (GraphQL + temps réel) | BirdWeather : détections acoustiques | API GraphQL et abonnement `newDetection` | ➖ Facultatif (temps réel hors périmètre), licence à confirmer |
 | Scraping | Une page sous licence ouverte (par exemple Wikipédia), pour enrichir les espèces | Scraping HTML | 🔎 Page à choisir |
 | Fichier | Extraction Faune-France (CSV), sinon téléchargement GBIF ; référentiels TAXREF et liste rouge | Fichiers | ⏳ Selon la réponse de la LPO |
