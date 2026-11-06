@@ -1,0 +1,4 @@
+# Outils de développement (pas nécessaires pour faire tourner le projet)
+pre-commit
+# Génération des schémas d'architecture (nécessite aussi Graphviz : sudo apt install graphviz)
+diagrams
