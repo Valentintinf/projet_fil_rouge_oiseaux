@@ -67,7 +67,7 @@ ON CONFLICT (id) DO UPDATE SET
     qualite = EXCLUDED.qualite,
     licence = EXCLUDED.licence,
     url = EXCLUDED.url,
-    ingere_le = NOW()
+    ingere_le = now()
 """
 
 journal = logging.getLogger(__name__)

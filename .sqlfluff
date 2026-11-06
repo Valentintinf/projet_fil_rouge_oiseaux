@@ -13,3 +13,7 @@ tab_space_size = 4
 
 [sqlfluff:rules:capitalisation.keywords]
 capitalisation_policy = upper
+
+# Fonctions en minuscules : now(), coalesce(), st_intersects()...
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower

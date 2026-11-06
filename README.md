@@ -25,9 +25,10 @@ Le besoin, le périmètre et l'architecture sont décrits dans [docs/cadrage.md]
    docker compose up -d
    ```
 
-4. Lancer une collecte :
+4. Charger le référentiel des communes, puis lancer une collecte :
 
    ```bash
+   python -m oiseaux.ingestion.communes                    # 534 communes de Gironde
    python -m oiseaux.ingestion.inaturalist --pages-max 2   # essai rapide : 400 observations
    python -m oiseaux.ingestion.inaturalist                 # collecte incrémentale complète
    ```
@@ -43,6 +44,11 @@ Le besoin, le périmètre et l'architecture sont décrits dans [docs/cadrage.md]
 | Source | Module | Table | Fréquence |
 | --- | --- | --- | --- |
 | iNaturalist : observations d'oiseaux en Gironde (licences réutilisables uniquement) | `oiseaux.ingestion.inaturalist` | `brut.inaturalist_observations` | Incrémentale (`updated_since`) |
+| geo.api.gouv.fr : communes de Gironde, avec leur contour et leur intercommunalité | `oiseaux.ingestion.communes` | `ref.communes` | Rechargement complet |
+
+Chaque observation est rattachée à sa commune par une jointure spatiale PostGIS, dans la vue `brut.inaturalist_observations_communes`.
+
+Les choix techniques sont justifiés dans [docs/decisions](docs/decisions/README.md).
 
 ## Qualité du code et CI/CD
 

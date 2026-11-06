@@ -144,6 +144,7 @@ Ce schéma est généré par du code avec la librairie `diagrams` : [generer_vue
 | Langage | Python 3.14 | Supporté par dbt, PySpark et Airflow | ✅ Décidé |
 | Orchestration | Airflow | Standard du métier, planifie les collectes | 🔎 À confirmer |
 | Base opérationnelle et entrepôt | PostgreSQL + dbt | Demandé dans la formation, gère les SCD | ✅ Décidé |
+| Données géographiques | PostGIS + référentiel des communes (geo.api.gouv.fr) | Rattacher chaque observation à sa commune en SQL ([fiche 0001](decisions/0001-postgis.md)) | ✅ Décidé |
 | Big data | Spark sur le snapshot GBIF | Volume réel : plusieurs milliards d'occurrences au total | 🔎 À valider |
 | Data lake | Stockage objet compatible S3 (par exemple MinIO), en Parquet | Tourne en local avec Docker | 🔎 À confirmer |
 | Temps réel | Consommateur Python ; file de messages (Kafka ou Redpanda) si besoin | Abonnement BirdWeather et sondage de Movebank | 🔎 À concevoir |

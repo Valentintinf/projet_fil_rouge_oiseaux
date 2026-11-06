@@ -3,7 +3,9 @@
 # Les identifiants viennent du fichier .env (copie de .env.example).
 services:
   postgres:
-    image: postgres:16
+    # PostgreSQL 16 + PostGIS 3.7 (données géographiques, voir docs/decisions/0001-postgis.md).
+    # Basée sur Debian trixie, comme postgres:16 : mêmes règles de tri (collation).
+    image: postgis/postgis:16-3.7
     container_name: oiseaux-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
