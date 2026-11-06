@@ -107,16 +107,16 @@ On ajoute à la fin, entre parenthèses, la clé du ticket Jira concerné (proje
 **La clé s'ajoute toute seule** si on travaille sur une branche qui la porte : un hook (`scripts/ajouter_cle_jira.py`) la lit dans le nom de la branche et l'ajoute au message.
 
 ```bash
-git switch -c feat/DE-41-biodiv-sports              # une branche par ticket
-git commit -m "feat: collecte des zones sensibles"  # devient « ... (DE-41) »
+git switch -c feat/DE-30-biodiv-sports              # une branche par ticket
+git commit -m "feat: collecte des zones sensibles"  # devient « ... (DE-30) »
 ```
 
 Après avoir modifié `.pre-commit-config.yaml`, il faut relancer `pre-commit install` pour installer le hook.
 
 Exemples :
 
-- `feat: collecte des zones sensibles Biodiv'Sports (DE-41)`
-- `docs: grilles d'entretien des producteurs et des exploitants (DE-33)`
+- `feat: collecte des zones sensibles Biodiv'Sports (DE-30)`
+- `docs: grilles d'entretien des producteurs et des exploitants (DE-23)`
 - `fix: arrondi des coordonnées iNaturalist`
 
 ### Intégration et livraison continues (GitHub Actions)

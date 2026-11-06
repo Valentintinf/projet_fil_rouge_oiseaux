@@ -39,7 +39,7 @@ Ce tableau prépare les deux grilles d'entretien d'E1 : une pour ceux qui **prod
 
 1. **Consolider** les observations d'oiseaux de la Gironde de 2015 à 2025, issues d'au moins 4 sources, dans un entrepôt de données unique, d'ici fin janvier 2027.
 2. **Mettre à disposition** les indicateurs par commune (nombre d'espèces, tendance, espèces menacées) via une API REST documentée et un tableau de bord, d'ici fin février 2027.
-3. **Intégrer en temps réel** les détections BirdWeather et les positions Movebank dans le data lake, avec moins de 5 minutes entre la détection et sa disponibilité, d'ici fin février 2027.
+3. *(Facultatif, depuis la réponse du formateur du 06/11/2026 : E7 se fait sur son brief.)* **Intégrer en temps réel** les détections BirdWeather et les positions Movebank dans le data lake, avec moins de 5 minutes entre la détection et sa disponibilité, d'ici fin février 2027.
 
 ## 4. Le périmètre
 
@@ -61,11 +61,12 @@ Ce tableau prépare les deux grilles d'entretien d'E1 : une pour ceux qui **prod
 | Service web (API REST) | iNaturalist : observations d'oiseaux | API publique, environ 60 requêtes par minute | ✅ Testée |
 | Service web (API REST) | Biodiv'Sports : zones sensibles pour la faune | API Geotrek v2 publique | ✅ Testée |
 | Service web (API) | Movebank : suivi GPS (par exemple, les cigognes) | API JSON publique, licence propre à chaque étude | ✅ Testée |
-| Service web (GraphQL + temps réel) | BirdWeather : détections acoustiques | API GraphQL et abonnement `newDetection` | ⏳ Licence à confirmer |
+| Service web (API avec clé) | xeno-canto : enregistrements de chants d'oiseaux (suggestion du formateur) | API v3, clé gratuite, licence Creative Commons par enregistrement | 🔜 À intégrer (clé à créer) |
+| Service web (GraphQL + temps réel) | BirdWeather : détections acoustiques | API GraphQL et abonnement `newDetection` | ➖ Facultatif (temps réel hors périmètre), licence à confirmer |
 | Scraping | Une page sous licence ouverte (par exemple Wikipédia), pour enrichir les espèces | Scraping HTML | 🔎 Page à choisir |
 | Fichier | Extraction Faune-France (CSV), sinon téléchargement GBIF ; référentiels TAXREF et liste rouge | Fichiers | ⏳ Selon la réponse de la LPO |
 | Base de données | Base PostgreSQL opérationnelle du projet | SQL | ✅ |
-| Système big data | Snapshot GBIF en Parquet, traité avec Spark | Parquet + Spark | 🔎 À valider avec le formateur |
+| Système big data | Snapshot GBIF en Parquet, traité avec Spark | Parquet + Spark | ✅ Validé par le formateur (06/11/2026) |
 
 **Règle de sécurité :** le projet doit tourner entièrement **sans** les données de la LPO. Si elles arrivent, elles enrichissent le projet ; si elles n'arrivent pas, GBIF et iNaturalist suffisent.
 
@@ -145,10 +146,10 @@ Ce schéma est généré par du code avec la librairie `diagrams` : [generer_vue
 | Orchestration | Airflow 3.3, en local (Docker, LocalExecutor) | Standard du métier, compatible Python 3.14 et dbt ([fiche 0002](decisions/0002-orchestrateur.md)) | ✅ Décidé |
 | Base opérationnelle et entrepôt | PostgreSQL + dbt | Demandé dans la formation, gère les SCD | ✅ Décidé |
 | Données géographiques | PostGIS + référentiel des communes (geo.api.gouv.fr) | Rattacher chaque observation à sa commune en SQL ([fiche 0001](decisions/0001-postgis.md)) | ✅ Décidé |
-| Big data | Spark sur le snapshot GBIF | Volume réel : plusieurs milliards d'occurrences au total | 🔎 À valider |
-| Data lake | Stockage objet compatible S3 (par exemple MinIO), en Parquet | Tourne en local avec Docker | 🔎 À confirmer |
-| Temps réel | Consommateur Python ; file de messages (Kafka ou Redpanda) si besoin | Abonnement BirdWeather et sondage de Movebank | 🔎 À concevoir |
-| Catalogue | À choisir après comparaison (E7 l'exige) | OpenMetadata, DataHub, etc. | 🔎 Comparaison à faire |
+| Big data | Spark SQL sur le snapshot GBIF (253 Go de Parquet, plusieurs milliards d'occurrences) | Validé par le formateur. Couvre C8 et C9. Pas de crédit cloud fourni : exécution prévue en local, en lisant directement le bucket public. | ✅ Décidé (fiche 0003 à écrire) |
+| Data lake | Stockage objet compatible S3 (par exemple MinIO), en Parquet | Tourne en local avec Docker | ➖ Facultatif (E7 sur le brief du formateur) |
+| Temps réel | Consommateur Python ; file de messages (Kafka ou Redpanda) si besoin | Abonnement BirdWeather et sondage de Movebank | ➖ Facultatif (E7 sur le brief du formateur) |
+| Catalogue | À choisir après comparaison | OpenMetadata, DataHub, etc. | ➖ Facultatif (E7 sur le brief du formateur) |
 | API | FastAPI | Documentation OpenAPI générée automatiquement (C12) | ✅ Décidé |
 | Infrastructure | Docker Compose sous WSL, CI GitHub Actions | Installation reproductible, testée en CI (E7) | ✅ En place |
 
@@ -170,8 +171,8 @@ Ce schéma est généré par du code avec la librairie `diagrams` : [generer_vue
 | --- | --- | --- | --- |
 | La LPO ne répond pas ou refuse | Moyenne | Faible | GBIF et iNaturalist couvrent le besoin |
 | BirdWeather refuse la réutilisation | Faible | Moyen | Temps réel avec Movebank et iNaturalist, ou flux simulé |
-| GBIF + Spark refusé comme « big data » | Faible | Fort | Demander au formateur quelle source il accepte, dès maintenant |
-| E6 et E7 refusés sur ce projet | Moyenne | Moyen | Faire E6 et E7 sur les briefs du formateur |
+| ~~GBIF + Spark refusé comme « big data »~~ | Écarté (06/11/2026) | Fort | Le formateur a validé GBIF + Spark |
+| ~~E6 et E7 refusés sur ce projet~~ | Réalisé (06/11/2026) | Moyen | E6 et E7 se font sur les briefs du formateur ; le projet se concentre sur E1 à E5 |
 | Machine trop juste pour Spark + Airflow + Kafka en local | Moyenne | Moyen | Travailler sur un échantillon GBIF ; passer certaines briques dans le cloud |
 | Dispersion sur l'aspect naturaliste | Moyenne | Moyen | Tout ramener à la question de décision |
 
@@ -184,12 +185,16 @@ Ce schéma est généré par du code avec la librairie `diagrams` : [generer_vue
 | E3 | La présentation de lancement : feuille de route, calendrier, stratégie de communication |
 | E4 | Les scripts de collecte des 5 types de sources, le nettoyage, la base PostgreSQL et l'API FastAPI |
 | E5 | L'entrepôt PostgreSQL + dbt en étoile : un fait « observation » et des dimensions espèce, date, commune et source |
-| E6 | 🔎 Si validé : une évolution de l'entrepôt (nouvelle source Movebank, statut liste rouge en SCD de type 2) |
-| E7 | 🔎 Si validé : le data lake (batch + temps réel), son catalogue, sa supervision et sa gouvernance |
+| E6 | ➖ Hors projet : brief du formateur (maintenance d'un entrepôt existant). L'historisation du statut liste rouge (SCD) reste une piste facultative pour s'entraîner. |
+| E7 | ➖ Hors projet : brief du formateur (data lake). Le data lake et le temps réel des oiseaux deviennent facultatifs, en entraînement s'il reste du temps. |
+
+> Décision du formateur (06/11/2026) : E6 et E7 se font à part, sur ses briefs. Le projet oiseaux couvre E1 à E5. La source big data (GBIF + Spark) reste dans le projet, car C8 (E4) l'exige.
 
 ## 10. Prochaines étapes
 
-1. Premier script d'ingestion : iNaturalist vers PostgreSQL, avec ses tests.
-2. Mise en place de Docker Compose : PostgreSQL d'abord, puis les autres briques au fur et à mesure.
-3. Modèle de données de l'entrepôt (schéma en étoile).
-4. Ajout des autres sources, une par une.
+Déjà fait au 06/11/2026 : collecte iNaturalist, référentiel des communes et rattachement PostGIS, orchestration Airflow, CI/CD, board Jira.
+
+1. Fiche de décision 0003 (Spark SQL en local), puis collecte GBIF avec Spark SQL : la source big data de C8, et des requêtes SQL pour C9.
+2. Collecte xeno-canto (API avec clé), Biodiv'Sports (zones sensibles), Movebank, scraping et fichiers (TAXREF, liste rouge) : les autres types de sources de C8.
+3. Modèle de données de l'entrepôt (schéma en étoile), puis projet dbt (E5).
+4. Bilan financier : suivi du temps dans Jira dès maintenant, prévisionnel puis réalisé (E2).
