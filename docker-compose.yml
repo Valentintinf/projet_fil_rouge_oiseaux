@@ -29,6 +29,8 @@ x-airflow-commun: &airflow-commun
     PGUSER: ${PGUSER}
     PGPASSWORD: ${PGPASSWORD}
     PGDATABASE: ${PGDATABASE}
+    # Clés d'API des sources (jamais dans Git, uniquement dans .env)
+    XENO_CANTO_API_KEY: ${XENO_CANTO_API_KEY:-}
   volumes:
     - ./dags:/opt/airflow/dags:ro
     - ./src:/opt/airflow/src:ro
