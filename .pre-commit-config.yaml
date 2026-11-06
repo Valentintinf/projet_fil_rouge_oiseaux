@@ -5,8 +5,9 @@
 # Lancer tous les contrôles à la main : pre-commit run --all-files
 # Mettre à jour les versions des hooks : pre-commit autoupdate
 
-# Installe les hooks pre-commit ET commit-msg (format du message de commit)
-default_install_hook_types: [pre-commit, commit-msg]
+# Installe les hooks pre-commit, prepare-commit-msg (ajout de la clé Jira)
+# et commit-msg (format du message de commit)
+default_install_hook_types: [pre-commit, prepare-commit-msg, commit-msg]
 default_stages: [pre-commit]
 
 repos:
@@ -45,6 +46,16 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
+
+  # Clé Jira : ajoutée automatiquement au message à partir du nom de la branche
+  # (branche « feat/DE-41-biodiv-sports » → message « feat: ... (DE-41) »)
+  - repo: local
+    hooks:
+      - id: ajouter-cle-jira
+        name: Ajouter la clé Jira de la branche au message de commit
+        entry: python scripts/ajouter_cle_jira.py
+        language: python
+        stages: [prepare-commit-msg]
 
   # Message de commit : feat:, fix:, chore: ou docs: + description,
   # suivie si possible de la clé du ticket Jira : « feat: ... (DE-41) »

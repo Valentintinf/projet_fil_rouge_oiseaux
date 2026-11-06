@@ -104,6 +104,15 @@ Chaque message commence par un préfixe, suivi d'une courte description :
 
 On ajoute à la fin, entre parenthèses, la clé du ticket Jira concerné (projet `DE`). Elle est facultative pour les petits commits sans ticket.
 
+**La clé s'ajoute toute seule** si on travaille sur une branche qui la porte : un hook (`scripts/ajouter_cle_jira.py`) la lit dans le nom de la branche et l'ajoute au message.
+
+```bash
+git switch -c feat/DE-41-biodiv-sports              # une branche par ticket
+git commit -m "feat: collecte des zones sensibles"  # devient « ... (DE-41) »
+```
+
+Après avoir modifié `.pre-commit-config.yaml`, il faut relancer `pre-commit install` pour installer le hook.
+
 Exemples :
 
 - `feat: collecte des zones sensibles Biodiv'Sports (DE-41)`

@@ -11,6 +11,10 @@ ignore = [
     "S101", # assert autorisé (utilisé par pytest)
 ]
 
+[lint.isort]
+# Modules du projet : le code (src/oiseaux) et les scripts d'outillage (scripts/)
+known-first-party = ["oiseaux", "ajouter_cle_jira"]
+
 [lint.per-file-ignores]
 "tests/**" = ["S"]
 
