@@ -5,6 +5,7 @@ Chaque choix technique important a sa fiche : le contexte, les options comparée
 | N° | Décision | Statut | Date |
 | --- | --- | --- | --- |
 | [0001](0001-postgis.md) | Rattacher les observations aux communes avec PostGIS | ✅ Acceptée | 06/11/2026 |
+| [0002](0002-orchestrateur.md) | Orchestrer les collectes et les transformations avec Airflow | ✅ Acceptée | 06/11/2026 |
 
 ## Modèle
 

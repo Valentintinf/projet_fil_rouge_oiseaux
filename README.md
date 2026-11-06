@@ -39,6 +39,26 @@ Le besoin, le périmètre et l'architecture sont décrits dans [docs/cadrage.md]
    pytest
    ```
 
+## Orchestration avec Airflow
+
+Les collectes sont planifiées par Airflow 3.3, qui tourne dans Docker avec le reste du projet ([fiche de décision 0002](docs/decisions/0002-orchestrateur.md)).
+
+| DAG | Rythme | Rôle |
+| --- | --- | --- |
+| `collecte_inaturalist` | Tous les jours | Collecte incrémentale des observations iNaturalist |
+| `referentiel_communes` | Tous les mois | Rechargement des communes de Gironde |
+
+Démarrage, après avoir rempli les variables `AIRFLOW_*` du `.env` :
+
+```bash
+docker compose up -d --build
+```
+
+- L'interface est sur <http://localhost:8081>. On se connecte avec `AIRFLOW_ADMIN_USER` et `AIRFLOW_ADMIN_PASSWORD`.
+- Les DAG sont en pause à leur création : il faut les activer dans l'interface.
+- Pour vérifier que les DAG se chargent sans erreur : `docker compose exec airflow-scheduler airflow dags list-import-errors`.
+- Pour lancer un DAG une fois, sans attendre sa planification : `docker compose exec airflow-scheduler airflow dags trigger collecte_inaturalist`.
+
 ## Sources de données
 
 | Source | Module | Table | Fréquence |

@@ -142,7 +142,7 @@ Ce schéma est généré par du code avec la librairie `diagrams` : [generer_vue
 | Brique | Choix pressenti | Pourquoi | Statut |
 | --- | --- | --- | --- |
 | Langage | Python 3.14 | Supporté par dbt, PySpark et Airflow | ✅ Décidé |
-| Orchestration | Airflow | Standard du métier, planifie les collectes | 🔎 À confirmer |
+| Orchestration | Airflow 3.3, en local (Docker, LocalExecutor) | Standard du métier, compatible Python 3.14 et dbt ([fiche 0002](decisions/0002-orchestrateur.md)) | ✅ Décidé |
 | Base opérationnelle et entrepôt | PostgreSQL + dbt | Demandé dans la formation, gère les SCD | ✅ Décidé |
 | Données géographiques | PostGIS + référentiel des communes (geo.api.gouv.fr) | Rattacher chaque observation à sa commune en SQL ([fiche 0001](decisions/0001-postgis.md)) | ✅ Décidé |
 | Big data | Spark sur le snapshot GBIF | Volume réel : plusieurs milliards d'occurrences au total | 🔎 À valider |

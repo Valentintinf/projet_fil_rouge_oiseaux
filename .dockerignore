@@ -1,0 +1,9 @@
+# Fichiers exclus des images Docker (plus léger, et aucun secret dans l'image)
+.git
+.venv
+.env
+**/__pycache__
+.ruff_cache
+.pytest_cache
+docs
+tests

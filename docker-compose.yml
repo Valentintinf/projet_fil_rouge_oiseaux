@@ -1,6 +1,46 @@
 # Services locaux du projet.
-# Démarrage : docker compose up -d      Arrêt : docker compose down
+# Démarrage : docker compose up -d --build      Arrêt : docker compose down
 # Les identifiants viennent du fichier .env (copie de .env.example).
+#
+# - postgres : les données du projet (PostgreSQL + PostGIS)
+# - airflow-* : l'orchestration des collectes (voir docs/decisions/0002-orchestrateur.md)
+#   Interface : http://localhost:8081 (port réglable avec AIRFLOW_PORT)
+
+x-airflow-commun: &airflow-commun
+  build:
+    context: .
+    dockerfile: airflow/Dockerfile
+  image: oiseaux-airflow:3.3.2
+  environment: &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-}
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${AIRFLOW_DB_PASSWORD:?à définir dans .env}@airflow-db/airflow
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:?à définir dans .env}
+    AIRFLOW__API_AUTH__JWT_ISSUER: oiseaux
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    # Code de collecte du projet, et connexion à la base du projet par le réseau Docker
+    PYTHONPATH: /opt/airflow/src
+    PGHOST: postgres
+    PGPORT: "5432"
+    PGUSER: ${PGUSER}
+    PGPASSWORD: ${PGPASSWORD}
+    PGDATABASE: ${PGDATABASE}
+  volumes:
+    - ./dags:/opt/airflow/dags:ro
+    - ./src:/opt/airflow/src:ro
+    - ./sql:/opt/airflow/sql:ro
+    - journaux_airflow:/opt/airflow/logs
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on: &airflow-dependances
+    airflow-db:
+      condition: service_healthy
+    postgres:
+      condition: service_healthy
+
 services:
   postgres:
     # PostgreSQL 16 + PostGIS 3.7 (données géographiques, voir docs/decisions/0001-postgis.md).
@@ -24,5 +64,89 @@ services:
       retries: 10
     restart: unless-stopped
 
+  # Base de métadonnées d'Airflow (historique des exécutions, utilisateurs...),
+  # séparée des données du projet. Pas de port ouvert sur la machine.
+  airflow-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: ${AIRFLOW_DB_PASSWORD:?à définir dans .env}
+      POSTGRES_DB: airflow
+    volumes:
+      - donnees_airflow:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Prépare Airflow au premier lancement : migration de la base, création du compte admin
+  airflow-init:
+    <<: *airflow-commun
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        mkdir -p /opt/airflow/logs
+        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/logs
+        exec /entrypoint airflow version
+    environment:
+      <<: *airflow-env
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_ADMIN_USER:-admin}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:?à définir dans .env}
+    user: "0:0"
+
+  airflow-apiserver:
+    <<: *airflow-commun
+    command: api-server
+    ports:
+      - "${AIRFLOW_PORT:-8081}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-dependances
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-commun
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-dependances
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-dag-processor:
+    <<: *airflow-commun
+    command: dag-processor
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-dependances
+      airflow-init:
+        condition: service_completed_successfully
+
 volumes:
   donnees_postgres:
+  donnees_airflow:
+  journaux_airflow:
