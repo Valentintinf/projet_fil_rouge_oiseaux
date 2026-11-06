@@ -1,6 +1,49 @@
 # projet_fil_rouge_oiseaux
 des oiseaux
 
+Le besoin, le périmètre et l'architecture sont décrits dans [docs/cadrage.md](docs/cadrage.md).
+
+## Démarrage rapide (sous WSL)
+
+1. Créer le venv et installer les dépendances :
+
+   ```bash
+   uv venv --python 3.14 .venv && source .venv/bin/activate
+   uv pip install -r requirements.txt -r requirements-dev.txt
+   ```
+
+2. Créer le fichier `.env` à partir du modèle, changer le mot de passe, puis charger les variables :
+
+   ```bash
+   cp .env.example .env
+   set -a && source .env && set +a
+   ```
+
+3. Démarrer PostgreSQL :
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. Lancer une collecte :
+
+   ```bash
+   python -m oiseaux.ingestion.inaturalist --pages-max 2   # essai rapide : 400 observations
+   python -m oiseaux.ingestion.inaturalist                 # collecte incrémentale complète
+   ```
+
+5. Lancer les tests :
+
+   ```bash
+   pytest
+   ```
+
+## Sources de données
+
+| Source | Module | Table | Fréquence |
+| --- | --- | --- | --- |
+| iNaturalist : observations d'oiseaux en Gironde (licences réutilisables uniquement) | `oiseaux.ingestion.inaturalist` | `brut.inaturalist_observations` | Incrémentale (`updated_since`) |
+
 ## Qualité du code et CI/CD
 
 ### Avant chaque commit (pre-commit)

@@ -1,0 +1,3 @@
+# Dépendances nécessaires pour faire tourner le projet
+requests>=2.32
+psycopg[binary]>=3.2
