@@ -102,7 +102,13 @@ Chaque message commence par un préfixe, suivi d'une courte description :
 - `chore:` configuration, outillage, dépendances
 - `docs:` documentation
 
-Exemple : `feat: ingestion des détections BirdWeather`
+On ajoute à la fin, entre parenthèses, la clé du ticket Jira concerné (projet `DE`). Elle est facultative pour les petits commits sans ticket.
+
+Exemples :
+
+- `feat: collecte des zones sensibles Biodiv'Sports (DE-41)`
+- `docs: grilles d'entretien des producteurs et des exploitants (DE-33)`
+- `fix: arrondi des coordonnées iNaturalist`
 
 ### Intégration et livraison continues (GitHub Actions)
 

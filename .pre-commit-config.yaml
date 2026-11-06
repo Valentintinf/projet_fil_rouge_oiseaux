@@ -46,7 +46,8 @@ repos:
     hooks:
       - id: detect-secrets
 
-  # Message de commit : feat:, fix:, chore: ou docs: + description
+  # Message de commit : feat:, fix:, chore: ou docs: + description,
+  # suivie si possible de la clé du ticket Jira : « feat: ... (DE-41) »
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.5.0
     hooks:
