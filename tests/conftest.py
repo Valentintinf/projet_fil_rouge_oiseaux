@@ -13,7 +13,7 @@ import psycopg
 import pytest
 from psycopg import sql
 
-from oiseaux.base_de_donnees import connecter
+from oiseaux.base_de_donnees import connecter, executer_script
 from oiseaux.ingestion.communes import preparer_base
 
 
@@ -59,6 +59,9 @@ def connexion(base_de_test: str) -> Iterator[psycopg.Connection]:
     """Connexion à la base de test, avec des tables créées et vides."""
     with connecter(dbname=base_de_test) as connexion:
         preparer_base(connexion)
-        connexion.execute("TRUNCATE brut.inaturalist_observations, ref.communes")
+        executer_script(connexion, "brut/xeno_canto_enregistrements.sql")
+        connexion.execute(
+            "TRUNCATE brut.inaturalist_observations, brut.xeno_canto_enregistrements, ref.communes"
+        )
         connexion.commit()
         yield connexion

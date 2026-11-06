@@ -46,6 +46,7 @@ Les collectes sont planifiées par Airflow 3.3, qui tourne dans Docker avec le r
 | DAG | Rythme | Rôle |
 | --- | --- | --- |
 | `collecte_inaturalist` | Tous les jours | Collecte incrémentale des observations iNaturalist |
+| `collecte_xeno_canto` | Tous les jours | Collecte incrémentale des enregistrements xeno-canto |
 | `referentiel_communes` | Tous les mois | Rechargement des communes de Gironde |
 
 Démarrage, après avoir rempli les variables `AIRFLOW_*` du `.env` :
@@ -65,6 +66,9 @@ docker compose up -d --build
 | --- | --- | --- | --- |
 | iNaturalist : observations d'oiseaux en Gironde (licences réutilisables uniquement) | `oiseaux.ingestion.inaturalist` | `brut.inaturalist_observations` | Incrémentale (`updated_since`) |
 | geo.api.gouv.fr : communes de Gironde, avec leur contour et leur intercommunalité | `oiseaux.ingestion.communes` | `ref.communes` | Rechargement complet |
+| xeno-canto : enregistrements de chants d'oiseaux en Gironde (API v3 avec clé, métadonnées et lien vers le son) | `oiseaux.ingestion.xeno_canto` | `brut.xeno_canto_enregistrements` | Incrémentale (`since:`) |
+
+La clé xeno-canto (gratuite, sur la page de compte xeno-canto) va dans `.env`, sous le nom `XENO_CANTO_API_KEY`. Elle ne doit jamais apparaître dans Git.
 
 Chaque observation est rattachée à sa commune par une jointure spatiale PostGIS, dans la vue `brut.inaturalist_observations_communes`.
 
